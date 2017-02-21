@@ -142,5 +142,8 @@ void write_matrix_to_file(const char *filename, const matrixNN r){
 		}
 		fprintf(f, "\n");
 	}
+    
+    //bug fix: previously missing fclose
+    fclose(f);
 
 }
