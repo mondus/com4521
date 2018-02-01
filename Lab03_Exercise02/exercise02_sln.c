@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <omp.h>
 #include "mandelbrot.h"
 
 //image size
@@ -35,7 +36,7 @@ int main(int argc, char *argv[])
 	double c_r, c_i;									//real and imaginary part of the constant c
 	double n_r, n_i, o_r, o_i;							//real and imaginary parts of new and old z
 	double mu;											//iteration with fractional component
-	clock_t begin, end;									//timers
+	double begin, end;									//timers
 	double elapsed;										//elapsed time
 	FILE *f;											//output file handle
 
@@ -51,7 +52,7 @@ int main(int argc, char *argv[])
 	fprintf(f, "%d %d\n%d\n", WIDTH, HEIGHT, 255);
 
 	//start timer
-	begin = clock();
+	begin = omp_get_wtime();
 
 	int temp = sizeof(local_histogram);
 	//clear the histogram initial values
@@ -177,9 +178,9 @@ int main(int argc, char *argv[])
 	fclose(f);
 
 	//stop timer
-	end = clock();
+	end = omp_get_wtime();
 
-	elapsed = (double)(end - begin) / CLOCKS_PER_SEC;
+	elapsed = end - begin;
 	printf("Complete in %f seconds\n", elapsed);
 
 	return 0;

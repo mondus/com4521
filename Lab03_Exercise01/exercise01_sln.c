@@ -24,7 +24,7 @@ void multiply(matrixNN r, const matrixNN a, const matrixNN b);
 
 
 void main(){
-	clock_t begin, end;
+	double begin, end;
 	double seconds;
 	matrixNN a;
 	matrixNN b;
@@ -50,12 +50,12 @@ void main(){
 	init_random_matrix(b);
 	init_empty_matrix(c);
 
-	begin = clock();
+	begin = omp_get_wtime();
 	transpose(b);
 	multiply(c, a, b);
 
-	end = clock();
-	seconds = (end - begin) / (double)CLOCKS_PER_SEC;
+	end = omp_get_wtime();
+	seconds = (end - begin);
 
 
 	printf("Matrix multiply complete in %.2f seconds\n", seconds);
