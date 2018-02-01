@@ -31,6 +31,9 @@ void main(){
 	matrixNN c;
 	int i;
 
+	int max_threads = omp_get_max_threads();
+        printf("OpenMP using %d threads\n", max_threads);
+
 
 
 	a = (matrixNN)malloc(sizeof(matrix_type)*N);
@@ -112,8 +115,8 @@ void transpose(matrixNN t){
 void multiply(matrixNN r, const matrixNN a, const matrixNN t){
 	int i, j, k;
 	matrix_type temp;
-
-#pragma omp parallel for shared(r, a, t) private(i, j, k, temp) 
+// a and t are const so are implicitly shared variables
+#pragma omp parallel for shared(r) private(i, j, k, temp) 
 		for (i = 0; i < N; i++){
 			for (j = 0; j < N; j++){
 				temp = 0;
