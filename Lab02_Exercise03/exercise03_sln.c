@@ -30,14 +30,25 @@ void main(){
 	}
 
 	//read student data
+	// fread first reads the length of the forename (and stores it in the str_len variable) else there are no more records and we will break from the loop
 	while (fread(&str_len, sizeof(unsigned int), 1, f) == 1){
+		//allocate a new student structure to hold the record from file
 		struct student *s;
 		s = (struct student *)malloc(sizeof(struct student));
+
+		//allocate enough space in the pointer to char forename to hold the string data from file
 		s->forename = (char*)malloc(sizeof(char)*str_len);
+		//read str_len characters from the file and store in the memory pointed to by forename
 		fread(s->forename, sizeof(char), str_len, f);
+		
+		//read the length of the surname (and stores it in the str_len variable)
 		fread(&str_len, sizeof(unsigned int), 1, f);
+		//allocate enough space in the pointer to char surname to hold the string data from file
 		s->surname = (char*)malloc(sizeof(char)*str_len);
+		//read str_len characters from the file and store in the memory pointed to by surname
 		fread(s->surname, sizeof(char), str_len, f);
+
+		//read the module mark (and stores it in the student structire average_module_mark variable)
 		fread(&s->average_module_mark, sizeof(float), 1, f);
 
 		//append a new item to the linked list
@@ -48,7 +59,7 @@ void main(){
 		else
 			end = add_to_linked_list(end);
 
-		//set the record
+		//set the record (cast the pointer to the student structure as a generic void pointer)
 		end->record = (void *)s;
 
 	}
