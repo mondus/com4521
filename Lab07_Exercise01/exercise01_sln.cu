@@ -100,8 +100,8 @@ void maximumMark_atomic(student_records *h_records, student_records *h_records_r
 	float time;
 	cudaEvent_t start, stop;
 
-	max_mark = 0;
-	max_mark_student_id = 0.0f;
+	max_mark = 0.0f;
+	max_mark_student_id = 0;
 
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
@@ -144,8 +144,8 @@ void maximumMark_recursive(student_records *h_records, student_records *h_record
 	float time;
 	cudaEvent_t start, stop;
 
-	max_mark = 0;
-	max_mark_student_id = 0.0f;
+	max_mark = 0.0f;
+	max_mark_student_id = 0;
 
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
@@ -207,8 +207,8 @@ void maximumMark_SM(student_records *h_records, student_records *h_records_resul
 	float time;
 	cudaEvent_t start, stop;
 
-	max_mark = 0;
-	max_mark_student_id = 0.0f;
+	max_mark = 0.0f;
+	max_mark_student_id = 0;
 
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
@@ -262,8 +262,8 @@ void maximumMark_shuffle(student_records *h_records, student_records *h_records_
 	float time;
 	cudaEvent_t start, stop;
 
-	max_mark = 0;
-	max_mark_student_id = 0.0f;
+	max_mark = 0.0f;
+	max_mark_student_id = 0;
 
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
