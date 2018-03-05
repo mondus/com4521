@@ -22,7 +22,7 @@
 #define INF     2e10f
 
 void output_image_file(uchar4* image);
-void input_image_file(char* filename, uchar4* image);
+void input_image_file(const char* filename, uchar4* image);
 void checkCUDAError(const char *msg);
 
 texture<uchar4, cudaTextureType1D, cudaReadModeElementType> sample1D;
@@ -259,7 +259,7 @@ void output_image_file(uchar4* image)
 	fclose(f);
 }
 
-void input_image_file(char* filename, uchar4* image)
+void input_image_file(const char* filename, uchar4* image)
 {
 	FILE *f; //input file handle
 	char temp[256];
