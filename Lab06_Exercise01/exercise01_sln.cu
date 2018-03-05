@@ -100,9 +100,7 @@ int main(int argc, char **argv)
 {
 	unsigned int mem_size_A, mem_size_B, mem_size_C;
 	unsigned int x, y, errors;
-	int maxActiveBlocks;
 	float msec, occupancy;
-	cudaDeviceProp props;
 	cudaEvent_t start, stop;
 
 	if (A_WIDTH != B_HEIGHT){
