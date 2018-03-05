@@ -61,7 +61,7 @@ __device__ __host__ int binIndex(int2 bin);
 void particlesCPU();
 void particlesGPU();
 void initParticles(particles *p);
-int checkResults(char* name, particles *p);
+int checkResults(const char* name, particles *p);
 void keyValuesCPU(particles *p, key_values *kv);
 void sortKeyValuesCPU(key_values *kv);
 void reorderParticlesCPU(key_values *kv, particles *p, particles *p_sorted);
@@ -385,7 +385,7 @@ void initParticles(particles *p){
 }
 
 
-int checkResults(char* name, particles *p){
+int checkResults(const char* name, particles *p){
 	int i, j, errors;
 
 	errors = 0;
