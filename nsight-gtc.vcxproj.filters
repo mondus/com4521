@@ -17,4 +17,7 @@
   <ItemGroup>
     <CudaCompile Include="nsight-gtc.cu" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="nsight-gtc.cu.vsspell" />
+  </ItemGroup>
 </Project>
