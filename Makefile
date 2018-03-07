@@ -11,6 +11,16 @@
 #
 #
 # Makefile only supported on Linux Platforms.
+# 
+# IMPORTANT: To use this Makefile on ShARC you MUST ensure you have loaded the 
+# appropriate modules. e.g.
+#
+# module load dev/gcc/4.9.4
+# module load libs/CUDA
+#
+# You do NOT need to be on a GPU node in order to build GPU code but you must be 
+# on a GPU node to run the code you have built. See the module website for more
+# information.
 #
 ################################################################################
 
