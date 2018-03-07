@@ -25,7 +25,6 @@
 //4 Texture Cache
 //5 B
 
-
 // STEP 0x00: Default code
 // STEP 0x1a: Change the block size to 32x2 (improve coalescing) -- It. 1, Eclipse Ed.
 // STEP 0x1b: Change the block size to 8x16 (improve occupancy) -- It. 1, Visual Studio Ed.
@@ -41,6 +40,12 @@
 // STEP 0x91: Use floats and math intrinsics in sobel_filter (compile with --use_fast_math)
 // STEP
 
+/**
+ * If using Makefile to build you must specify the step value
+ * This can be achieved using:
+ * make step=0x00
+ * 0x00 can be replaced with any of the above 0x values
+**/
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #define CHECK(cond) do { \
