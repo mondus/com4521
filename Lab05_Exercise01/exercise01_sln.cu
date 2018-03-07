@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define N 65536
+#define N 4194304
 #define THREADS_PER_BLOCK 128
 #define PUMP_RATE 2
 
