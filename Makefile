@@ -11,6 +11,11 @@
 #
 #
 # Makefile only supported on Linux Platforms.
+# 
+# IMPORTANT: To use this Makefile on ShARC you MUST ensure you have loaded the 
+# appropriate modules. e.g.
+#
+# module load dev/gcc/4.9.4
 #
 ################################################################################
 
