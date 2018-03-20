@@ -47,11 +47,11 @@ step?=0x00
 
 # Build rule for object files ($@ is left hand side of rule, $< is first item from the right hand side of rule)
 %.o : %.cu $(DEPS)
-	$(NVCC) -c -o $@ $< $(NVCC_FLAGS) $(addprefix -Xcompiler ,$(CCFLAGS)) -D OPTIMIZATION_STEP=$(step)
+	$(NVCC) -c -o $@ $< $(NVCC_FLAGS) $(addprefix -Xcompiler ,$(CFLAGS)) -D OPTIMIZATION_STEP=$(step)
 
 # Make example ($^ is all items from right hand side of the rule)
 $(EXAMPLE) : $(OBJ)
-	$(NVCC) -o $@ $^ $(NVCC_FLAGS) $(addprefix -Xcompiler ,$(CCFLAGS)) -D OPTIMIZATION_STEP=$(step)
+	$(NVCC) -o $@ $^ $(NVCC_FLAGS) $(addprefix -Xcompiler ,$(CFLAGS)) -D OPTIMIZATION_STEP=$(step)
 
 # PHONY prevents make from doing something with a filename called clean
 .PHONY : clean

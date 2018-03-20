@@ -1055,7 +1055,7 @@ void load_image(const char *filename)
     ;
 
   // Parse the header.
-  int width = 0, height = 0;
+  unsigned int width = 0, height = 0;
   CHECK(sscanf(header, "%u %u", &width, &height) == 2);
   printf("Image %s: w=%4d x h=%4d\n", filename, width, height);
 
@@ -1063,7 +1063,7 @@ void load_image(const char *filename)
   CHECK(fgets(header, HEADER_SIZE, fp));
 
   // Read the pixels.
-  int size_in_bytes = 3*width*height*sizeof(uchar);
+  unsigned int size_in_bytes = 3*width*height*sizeof(uchar);
   uchar *img_rgb = (uchar*) malloc(size_in_bytes);  
   CHECK(img_rgb);
   CHECK(fread(img_rgb, sizeof(uchar), 3*width*height, fp) == 3*width*height);
@@ -1080,7 +1080,7 @@ void load_image(const char *filename)
   uchar4 *img_rgba = (uchar4*)malloc(size_in_bytes);
 #endif
   CHECK(img_rgba);
-  for( int i = 0 ; i < width*height ; ++i )
+  for( unsigned int i = 0 ; i < width*height ; ++i )
     img_rgba[i] = make_uchar4(img_rgb[3*i+0], img_rgb[3*i+1], img_rgb[3*i+2], 0);
   free(img_rgb);
 
