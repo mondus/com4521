@@ -57,7 +57,7 @@ __global__ void simple_instance_kernel(float4 *instance_data, unsigned int width
 
 void executeSimulation()
 {
-	unsigned int num_bytes;
+	size_t num_bytes;
 	float4 *dptr;
 
 	// Exercise 1.1) Map CUDA graphics resource

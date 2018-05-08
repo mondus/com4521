@@ -16,7 +16,7 @@
 #define NOMINMAX
 #include <windows.h>
 #include <GL/glew.h>
-#include <GL/freeglut.h>
+#include <GL/glut.h>
 
 #define REFRESH_DELAY 10		/** Refresh delay controls how frequently the scene should be re-drawn (measured in ms) */
 #define WINDOW_WIDTH 1024		/** Window width */
