@@ -38,13 +38,13 @@ void main(){
 
 
 
-	a = (matrixNN)malloc(sizeof(matrix_type)*N);
+	a = (matrixNN)malloc(sizeof(matrix_type*)*N);
 	for (i = 0; i < N;i++)
 		a[i] = (matrix_type*)malloc(sizeof(matrix_type)*N);
-	b = (matrixNN)malloc(sizeof(matrix_type)*N);
+	b = (matrixNN)malloc(sizeof(matrix_type*)*N);
 	for (i = 0; i < N; i++)
 		b[i] = (matrix_type*)malloc(sizeof(matrix_type)*N);
-	c = (matrixNN)malloc(sizeof(matrix_type)*N);
+	c = (matrixNN)malloc(sizeof(matrix_type*)*N);
 	for (i = 0; i < N; i++)
 		c[i] = (matrix_type*)malloc(sizeof(matrix_type)*N);
 
