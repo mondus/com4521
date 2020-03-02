@@ -99,7 +99,7 @@ void transpose(matrixNN t){
 	matrix_type temp;
 
 	for (i = 0; i < N; i++){
-		for (j = 0; j < N; j++){
+		for (j = 0; j < i; j++){
 			temp = t[i][j];
 			t[i][j] = t[j][i];
 			t[j][i] = temp;
