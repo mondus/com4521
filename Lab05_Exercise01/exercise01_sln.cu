@@ -50,8 +50,8 @@ int main(void) {
 	b = (float *)malloc(size); random_floats(b);
 	c = (float *)malloc(size);
 
-	cudaMemcpyToSymbol(d_a, a, size, cudaMemcpyHostToDevice);
-	cudaMemcpyToSymbol(d_b, b, size, cudaMemcpyHostToDevice);
+	cudaMemcpyToSymbol(d_a, a, size);
+	cudaMemcpyToSymbol(d_b, b, size);
 
 	cudaEventRecord(start);
 	vectorAdd << <N / THREADS_PER_BLOCK, THREADS_PER_BLOCK >> >();
@@ -61,7 +61,7 @@ int main(void) {
 	cudaEventElapsedTime(&milliseconds, start, stop);
 	measure_BW = (READ_BYTES + WRITE_BYTES) / (milliseconds * 1e6);
 
-	cudaMemcpyFromSymbol(c, d_c, size, cudaMemcpyDeviceToHost);
+	cudaMemcpyFromSymbol(c, d_c, size);
 
 	cudaEventDestroy(start);
 	cudaEventDestroy(stop);
