@@ -51,6 +51,8 @@ __device__ void setMaxMarkAtomic(float mark, int id) {
 			// free lock
 			atomicExch((int*)&lock, 0);
 			needlock = false;
+			
+			__threadfence(); // gurentees that other threads are have completed global memory writes
 		}
 	}
 }
