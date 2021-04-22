@@ -67,7 +67,6 @@ int main(void) {
 	cudaEventDestroy(stop);
 
 	free(a); free(b); free(c);
-	cudaFree(d_a); cudaFree(d_b); cudaFree(d_c);
 
 	printf("Execution time is %f ms\n", milliseconds);
 	printf("Theoretical Bandwidth is %f GB/s\n", theoretical_BW);
