@@ -7,7 +7,7 @@ void init_random(){
 }
 
 unsigned short random_ushort(){
-// Ex 1.7, C-style casts take the form `(<type>)`, this is the same as Java
+    // Ex 1.7, C-style casts take the form `(<type>)`, this is the same as Java
     return (unsigned short) (rand());
 }
 
