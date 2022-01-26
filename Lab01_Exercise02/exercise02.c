@@ -10,11 +10,11 @@ int main()
 {
 
 	unsigned long long int sum = 0;		// sum is a an unsigned long long int as it adds only positive integer values
-	unsigned int average = 0;			// average is unsigned as all random numbers are positive. It does not need to be 64bit as the value can not exceed the range.
+	unsigned int average;			// average is unsigned as all random numbers are positive. It does not need to be 64bit as the value can not exceed the range.
 	signed long long min = 0;			// can be signed as we normalise so the range can not be exceeded
 	signed long long max = 0;			// can be signed as we normalise so the range can not be exceeded
 
-	unsigned char i = 0;				// unsigned to ensure that we can hold the full range of 0-255
+	unsigned char i;				// unsigned to ensure that we can hold the full range of 0-255
 
 	init_random();
 
