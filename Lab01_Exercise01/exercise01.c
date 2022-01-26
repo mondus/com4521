@@ -22,7 +22,7 @@ int main()
     int min = 0;
     int max = 0;
     // Ex 1.4, a char is 8 bits, compared to an int which is 32 bits, therefore i can represent the inclusive range [0, 255]
-    // `i` is used as the looping variable, normally this would be declared in the form `for(int i =0;`,
+    // `i` is used as the looping variable, normally this would be declared in the form `for(int i =0;...,...)`
     // however this is not supported according to early C specifications, so may not be permitted by some compilers.
     unsigned char i;
 
