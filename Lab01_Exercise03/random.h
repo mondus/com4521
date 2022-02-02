@@ -8,6 +8,7 @@ extern unsigned short random_ushort();
 
 extern unsigned int random_uint();
 
+// Ex 3.1 (1/3), A further prototype has been added to the header
 extern float random_float();
 
 
