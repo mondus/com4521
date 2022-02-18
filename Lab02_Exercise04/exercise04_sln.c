@@ -112,6 +112,9 @@ void multiply_A(matrixNN r, const matrixNN a, const matrixNN b){
 	}
 }
 
+// Ex 4.1, The variable temp is declared at local scope, and used to calculate the sum
+// Local variables can be preferable, as they are more likely to reside in low latency caches/memory
+// The impact of this will be more visible when we later use CUDA
 void multiply_B(matrixNN r, const matrixNN a, const matrixNN b){
 	int i, j, k;
 	matrix_type temp;
@@ -127,7 +130,10 @@ void multiply_B(matrixNN r, const matrixNN a, const matrixNN b){
 	}
 }
 
-
+// Ex 4.3, (1/2) Transposing the matrix allows memory access to be coalesced (neighbouring) during the multiply function
+// When a processor accesses pulls data from RAM into processor caches, it accesses cache lines worth of data at once
+// e.g. 32-128 bytes, hence reading along cache lines, as opposed to scattered accesses, can reduce the calls to higher latency RAM
+// Caches are only small, so scattered accesses may cause earlier spare data from cache lines to be evicted before it is required.
 void transpose(matrixNN t){
 	int i, j;
 	matrix_type temp;
@@ -142,8 +148,8 @@ void transpose(matrixNN t){
 
 }
 
-
-void multiply_C(matrixNN r, const matrixNN a, const matrixNN t){
+// Ex 4.3, (2/2) Now that matrix b has been transposed it is accessed [j][k] rather than [k][j] (see multiply_B())
+void multiply_C(matrixNN r, const matrixNN a, const matrixNN b){
 	int i, j, k;
 	matrix_type temp;
 
@@ -151,7 +157,7 @@ void multiply_C(matrixNN r, const matrixNN a, const matrixNN t){
 		for (j = 0; j < N; j++){
 			temp = 0;
 			for (k = 0; k < N; k++){
-				temp += a[i][k] * t[j][k];
+				temp += a[i][k] * b[j][k];
 			}
 			r[i][j] = temp;
 		}
@@ -159,6 +165,10 @@ void multiply_C(matrixNN r, const matrixNN a, const matrixNN t){
 }
 
 
+// Ex 4.(4), Loop unrolling is the process of manually writing the code which would normally be iterated.
+// Normally a compiler will automatically unroll suitable (e.g. fixed length) loops
+// However, in some cases manual unrolling could be required if the compiler is unable to perform it automatically
+// Loop unrolling removes the runtime cost of loop maintenance, (e.g. incrementing i, j, k), by performing the computations at compile time
 void multiply_C_unrolled(matrixNN r, const matrixNN a, const matrixNN t){
 	int i, j, k;
 	matrix_type temp;

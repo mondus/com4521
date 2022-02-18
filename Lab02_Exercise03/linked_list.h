@@ -8,8 +8,11 @@ typedef struct llitem{
 	void* record;
 } llitem;
 
-// Exercise 1.2) a function pointer which accepts a generic pointer and returns void
-void (*print_callback)(void* r) = NULL;
+// Ex 3.2, A function pointer which accepts a generic pointer and returns void
+// If the function's prototype is typedef'd, you can treat the prototype name as a type
+// This can be used to more clearly define function pointers
+typedef void print_callback_fn(void *);
+print_callback_fn* print_callback = NULL;
 
 void print_items(llitem *ll_start){
 	llitem *ll = ll_start;
@@ -32,7 +35,7 @@ llitem* create_linked_list(){
 	return ll_start;
 }
 
-/* Exercise 1.1 */
+// Ex 3.1
 llitem* add_to_linked_list(llitem* ll_end){
 	llitem *ll;
 	// pre check to make sure that the pointer provided points to a llitem struct which has been allocated

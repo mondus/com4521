@@ -4,6 +4,7 @@
 #define NUM_STUDENTS 4
 
 struct student{
+	// Ex 2, (1/4) forename and surname are now pointers, these will need to be initialised
 	char *forename;
 	char *surname;
 	float average_module_mark;
@@ -29,9 +30,11 @@ void main(){
 	for (i = 0; i < NUM_STUDENTS; i++){
 		unsigned int str_len;
 		fread(&str_len, sizeof(unsigned int), 1, f);
+		// Ex 2, (2/4) forename is now initialised using malloc() to the desired length
 		students[i].forename = (char*)malloc(sizeof(char)*str_len);
 		fread(students[i].forename, sizeof(char), str_len, f);
 		fread(&str_len, sizeof(unsigned int), 1, f);
+		// Ex 2, (3/4) surname is now initialised using malloc() to the desired length
 		students[i].surname = (char*)malloc(sizeof(char)*str_len);
 		fread(students[i].surname, sizeof(char), str_len, f);
 		fread(&students[i].average_module_mark, sizeof(float), 1, f);
@@ -46,6 +49,7 @@ void main(){
 
 	//cleanup
 	for (i = 0; i < NUM_STUDENTS; i++){
+		// Ex 2, (4/4) Manually allocated memory, must also be manually deallocated, failing to do so can create memory leaks.
 		free(students[i].forename);
 		free(students[i].surname);
 	}
