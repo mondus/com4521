@@ -10,6 +10,8 @@ struct student{
 
 void print_student(const struct student *s);
 
+// Ex 3.3, students2.bin is opened with fopen()
+// It is then iterated over using fread(), see the individual comments to understand how
 void main(){
 	llitem *end;
 	llitem *first;
@@ -48,7 +50,7 @@ void main(){
 		//read str_len characters from the file and store in the memory pointed to by surname
 		fread(s->surname, sizeof(char), str_len, f);
 
-		//read the module mark (and stores it in the student structire average_module_mark variable)
+		//read the module mark (and stores it in the student structure average_module_mark variable)
 		fread(&s->average_module_mark, sizeof(float), 1, f);
 
 		//append a new item to the linked list
