@@ -11,6 +11,8 @@
 #define WIDTH 1024
 #define HEIGHT 768
 
+// Ex 2.2 (2 of 2), Vary this value
+// Ex 2.3 (2 of 2), Set this to 1000
 #define MAX_ITERATIONS 18				//number of iterations
 
 //C parameters (modify these to change the zoom and position of the mandelbrot)
@@ -27,6 +29,8 @@ static rgb rand_banding[MAX_ITERATIONS + 1];			//random colour banding
 static int local_histogram[HEIGHT][MAX_ITERATIONS + 1];	//only required for exercise 2.2.3, HEIGHT is the maximum possible number of threads that could be initialised as it the maximum size of the number of work units (width of parallel loop)
 static rgb rgb_output[HEIGHT][WIDTH];					//output data
 
+// Ex 2.2 (1 of 2), Update tf to HISTOGRAM_ESCAPE_VELOCITY
+// Ex 2.3 (1 of 2), Update tf to HISTOGRAM_NORMALISED_ITERATION_COUNT
 const TRANSFER_FUNCTION tf = RANDOM_NORMALISED_ITERATION_COUNT;
 const HISTOGRAM_METHOD hist_method = OMP_ATOMIC;
 
@@ -69,6 +73,9 @@ int main(int argc, char *argv[])
 	}
 
 	//STAGE 1) calculate the escape time for each pixel
+	// Ex 2.1, Again the outer loop is being paralelised
+	// The If statement here, can prevent OpenMP from applying to the loop at runtime, based on the value of hist_method
+	// Ex 2.3.1-2.3.4, Vary the scheduling method and chunk size, to observe the impact, see lecture notes for full details of each schedule type
 #pragma omp parallel for private(i, x, c_r, c_i, n_r, n_i, o_r, o_i, mu) if(hist_method != OMP_SERIAL) schedule(dynamic, 1)
 	for (y = 0; y < HEIGHT; y++)
 	for (x = 0; x < WIDTH; x++)
@@ -106,12 +113,12 @@ int main(int argc, char *argv[])
 
 		if ((tf == HISTOGRAM_ESCAPE_VELOCITY) || (tf == HISTOGRAM_NORMALISED_ITERATION_COUNT)){
 			switch (hist_method){
-				//Exercise 2.2
+				//ex 2.2
 			case(OMP_SERIAL) : {
 								   histogram[i]++;
 								   break;
 			}
-				//Exercise 2.2.1
+				// ex 2.2.1, A critical section executes in serial, so that no threads execute the block simultaneously
 			case(OMP_CRITICAL) : {
 #pragma omp critical
 									 {
@@ -119,7 +126,7 @@ int main(int argc, char *argv[])
 									 }
 									 break;
 			}
-				//Exercise 2.2.2
+				// ex 2.2.2 (1 of 2), Each thread produces a local histogram, rather than contributing to the global histogram
 			case(OMP_MASTER) : {
 								   local_histogram[y][i]++;
 								   if (i == 0){
@@ -127,7 +134,8 @@ int main(int argc, char *argv[])
 								   }
 								   break;
 			}
-				//Exercise 2.2.3
+				// ex 2.2.3, The atomic statement uses hardware specific functionality to perform parallel operations free of race conditions
+				// In general, atomics are faster than critical sections, however they have more limited functionality
 			case(OMP_ATOMIC) : {
 #pragma omp atomic
 								   histogram[i]++;
@@ -139,7 +147,9 @@ int main(int argc, char *argv[])
 
 	}
 
-	//Exercise 2.2.2 serial code for summing local histograms (performed by master only)
+	// Exercise 2.2.2 serial code for summing local histograms (performed by master only)
+	// ex 2.2.2 (2 of 2), The main thread then sums the local histograms in serial into the global histogram
+	// As this is not part of a parallel block #pragma omp master is not required
 	if (hist_method == OMP_MASTER){
 		for (y = 0; y < HEIGHT; y++)
 		for (i = 0; i < MAX_ITERATIONS; i++)
