@@ -4,6 +4,7 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
+// Ex 2.2 (1/2), Update N to 2050
 #define N 2050
 #define THREADS_PER_BLOCK 128
 
@@ -12,9 +13,11 @@ void random_ints(int *a);
 void vectorAddCPU(int *a, int *b, int *c);
 int validate(int *a, int *ref);
 
-
+// Ex 2.1 (2/2), 'a[i] - b[i]' has been corrected to 'a[i] + b[i]'
 __global__ void vectorAdd(int *a, int *b, int *c, int max) {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
+	// Ex 2.3, Extra threads can either skip the code, or return early
+	// Forgetting to do this, would lead to out of bounds memory accesses
 	if (i<max)
 		c[i] = a[i] + b[i];
 }
@@ -45,6 +48,8 @@ int main(void) {
 	checkCUDAError("CUDA memcpy");
 
 	// Launch add() kernel on GPU
+	// Ex 2.2 (2/2) If the number of threads required does not divide by the number of blocks
+	// it may be necessary to launch an extra block with unwanted threads
 	dim3 blocksPerGrid((unsigned int)ceil(N / (double)THREADS_PER_BLOCK), 1, 1);
 	dim3 threadsPerBlock(THREADS_PER_BLOCK, 1, 1);
 	vectorAdd << <blocksPerGrid, threadsPerBlock >> >(d_a, d_b, d_c, N);
@@ -95,7 +100,7 @@ void vectorAddCPU(int *a, int *b, int *c)
 		c[i] = a[i] + b[i];
 	}
 }
-
+// Ex 2.1 (1/2), Simply iterate the 2 arrays and compare their values
 int validate(int *a, int *ref){
 	int errors = 0;
 	for (int i = 0; i < N; i++){
