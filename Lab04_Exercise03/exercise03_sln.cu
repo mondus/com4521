@@ -4,7 +4,9 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
+// Ex 3.1, Set N to 2048
 #define N 2048 //width
+// Ex 3.5 Define height separately
 #define M 1000 //height
 #define THREADS_PER_BLOCK 256
 #define SQRT_THREADS_PER_BLOCK sqrt(THREADS_PER_BLOCK)
@@ -16,6 +18,8 @@ int validate(int *a, int *ref);
 
 
 __global__ void matrixAdd(int *a, int *b, int *c) {
+	// Ex 3.4 (2/2), Calculate a global 2D index for the thread
+	// Then later on, convert this to a 1D index in i
 	int x = blockIdx.x * blockDim.x + threadIdx.x;
 	int y = blockIdx.y * blockDim.y + threadIdx.y;
 
@@ -32,6 +36,7 @@ int main(void) {
 	int *a, *b, *c, *c_ref;			// host copies of a, b, c
 	int *d_a, *d_b, *d_c;			// device copies of a, b, c
 	int errors;
+	// Ex 3.1/3.5, Modify size to account for 2 dimensions
 	unsigned int size = N * M * sizeof(int);
 
 	// Alloc space for device copies of a, b, c
@@ -51,13 +56,14 @@ int main(void) {
 	cudaMemcpy(d_b, b, size, cudaMemcpyHostToDevice);
 	checkCUDAError("CUDA memcpy");
 
+	// Ex 3.4 (1/2), Specify the y dimensions for the blocks and grid
 	// Launch add() kernel on GPU
 	unsigned int block_width = (unsigned int)SQRT_THREADS_PER_BLOCK;
 	unsigned int grid_width = (unsigned int)ceil((double)N / block_width);
 	unsigned int grid_height = (unsigned int)ceil((double)M / block_width);
 	dim3 blocksPerGrid(grid_width, grid_height, 1);
 	dim3 threadsPerBlock(block_width, block_width, 1);
-	matrixAdd << <blocksPerGrid, threadsPerBlock >> >(d_a, d_b, d_c);
+	matrixAdd<<<blocksPerGrid, threadsPerBlock>>>(d_a, d_b, d_c);
 	checkCUDAError("CUDA kernel");
 
 	//perform CPU version
@@ -92,6 +98,7 @@ void checkCUDAError(const char *msg)
 	}
 }
 
+// Ex 3.2, Modify the function to fill the full matrix
 void random_ints(int *a)
 {
 	for (unsigned int x = 0; x < N; x++){
@@ -101,6 +108,7 @@ void random_ints(int *a)
 	}
 }
 
+// Ex 3.3 (1/2), Modify the function to handle the full matrix
 void matrixAddCPU(int *a, int *b, int *c)
 {
 	for (unsigned int x = 0; x < N; x++){
@@ -111,6 +119,7 @@ void matrixAddCPU(int *a, int *b, int *c)
 	}
 }
 
+// Ex 3.3 (2/2), Modify the function to handle the full matrix
 int validate(int *a, int *ref){
 	int errors = 0;
 	for (unsigned int x = 0; x < N; x++){
