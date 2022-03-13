@@ -12,6 +12,8 @@
 #define READ_BYTES N*(2*4)  //2 reads of 4 bytes (a and b)
 #define WRITE_BYTES N*(4*1) //1 write of 4 bytes (to c)
 
+// Ex 1.1 (1/2), This device memory will be allocated at compile time
+// It resides in the same location as memory allocated via cudaMalloc()
 __device__ float d_a[N];
 __device__ float d_b[N];
 __device__ float d_c[N];
@@ -37,12 +39,14 @@ int main(void) {
 	if (deviceCount > 0)
 	{
 		cudaSetDevice(0);
+		// Ex 1.3, cudaGetDeviceProperties() returns information about the selected cuda device
+		// See documentation of cudaDeviceProp struct here: https://docs.nvidia.com/cuda/cuda-runtime-api/structcudaDeviceProp.html#structcudaDeviceProp
 		cudaDeviceProp deviceProp;
 		cudaGetDeviceProperties(&deviceProp, 0);
 		theoretical_BW = deviceProp.memoryClockRate * PUMP_RATE * (deviceProp.memoryBusWidth / 8.0) / 1e6; //convert to GB/s
 	}
 
-
+	// Ex 1.2 (1/4), Create two cuda event timers
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
 
@@ -50,19 +54,26 @@ int main(void) {
 	b = (float *)malloc(size); random_floats(b);
 	c = (float *)malloc(size);
 
+	// Ex 1.1 (2/2), Copy data to the device symbols
 	cudaMemcpyToSymbol(d_a, a, size);
 	cudaMemcpyToSymbol(d_b, b, size);
 
+	// Ex 1.2 (2/4), Log the first event timer
+	// This will record the time at which the cuda event is reached within the current execution stream (asynchronous)
 	cudaEventRecord(start);
 	vectorAdd << <N / THREADS_PER_BLOCK, THREADS_PER_BLOCK >> >();
+	// Ex 1.2 (3/4), Log the second event timer and synchronise
+	// Synchronise ensures all the events have elapsed, before calling cudaEventElapsedTime() to fetch the time difference between the two events
 	cudaEventRecord(stop);
 	cudaEventSynchronize(stop);
 
 	cudaEventElapsedTime(&milliseconds, start, stop);
+
+	// Ex 1.4, Calculate the measured bandwidth
 	measure_BW = (READ_BYTES + WRITE_BYTES) / (milliseconds * 1e6);
 
 	cudaMemcpyFromSymbol(c, d_c, size);
-
+	// Ex 1.2 (4/4), Clean up the created cuda events before program exit!
 	cudaEventDestroy(start);
 	cudaEventDestroy(stop);
 

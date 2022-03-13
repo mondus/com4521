@@ -1,7 +1,8 @@
 #ifndef __CUDACC__
 #define __CUDACC__
 #endif
-
+#pragma warning(disable : 4996)
+#pragma diag_suppress = deprecated_entity
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 #include <stdio.h>
@@ -25,7 +26,9 @@ void output_image_file(uchar4* image);
 void input_image_file(const char* filename, uchar4* image);
 void checkCUDAError(const char *msg);
 
+// Ex 3.1, (1/3) Specify a 1 dimensional texture
 texture<uchar4, cudaTextureType1D, cudaReadModeElementType> sample1D;
+// Ex 3.2, (2/3) Specify a 1 dimensional texture
 texture<uchar4, cudaTextureType2D, cudaReadModeElementType> sample2D;
 
 
@@ -70,6 +73,7 @@ __global__ void image_blur(uchar4 *image, uchar4 *image_output) {
 	image_output[output_offset].w = 255;
 }
 
+// Ex 3.1, (2/3) tex1Dfetch() is used to access the memory stored in the texture at a given offset
 __global__ void image_blur_texture1D(uchar4 *image_output) {
 	// map from threadIdx/BlockIdx to pixel position
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -112,6 +116,7 @@ __global__ void image_blur_texture1D(uchar4 *image_output) {
 	image_output[output_offset].w = 255;
 }
 
+// Ex 3.2, (2/3) tex2D() is used to access the memory stored in the texture at a given offset
 __global__ void image_blur_texture2D(uchar4 *image_output) {
 	// map from threadIdx/BlockIdx to pixel position
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -173,7 +178,9 @@ int main(void) {
 	cudaMemcpy(d_image, h_image, image_size, cudaMemcpyHostToDevice);
 	checkCUDAError("CUDA memcpy to device");
 
-	// 2D texture format for wrapping
+	// Ex 3.3, Set the cuda 2D texture address mode to wrapping
+	// This causes out of bounds accesses to the texture to wrap
+	// There are other options to control how out of bounds accesses to textures are handled
 	cudaChannelFormatDesc desc = cudaCreateChannelDesc<uchar4>();
 	sample2D.addressMode[0] = cudaAddressModeWrap;
 	sample2D.addressMode[1] = cudaAddressModeWrap;
@@ -190,7 +197,7 @@ int main(void) {
 	cudaEventElapsedTime(&ms.x, start, stop);
 	checkCUDAError("kernel normal");
 
-	// tex1D version
+	// Ex 3.1, (3/3) cudaBindTexture() is used to bind the CUDA texture to the memory we allocated
 	cudaBindTexture(0, sample1D, d_image, image_size);
 	checkCUDAError("tex1D bind");
 	cudaEventRecord(start, 0);
@@ -201,7 +208,9 @@ int main(void) {
 	cudaUnbindTexture(sample1D);
 	checkCUDAError("kernel tex1D");
 
-	// tex2D version
+	// Ex 3.2, (3/3) cudaBindTexture2D() is used to bind the CUDA texture to the memory we allocated
+	// There are alot more options here, to specify how the memory is laid out
+	// e.g. pitch, some image storage formats allocate memory with widths greater than the number of pixels
 	cudaBindTexture2D(0, sample2D, d_image, desc, IMAGE_DIM, IMAGE_DIM, IMAGE_DIM*sizeof(uchar4));
 	checkCUDAError("tex2D bind");
 	cudaEventRecord(start, 0);
