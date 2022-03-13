@@ -12,6 +12,7 @@
 
 #define IMAGE_DIM 2048
 #define SPHERE_SIZE_SAMPLES 8
+// Ex 2.3, Modify this value!
 #define STARTING_SPHERES 16
 #define MAX_SPHERES STARTING_SPHERES<<(SPHERE_SIZE_SAMPLES -1)
 
@@ -41,6 +42,12 @@ __device__ float sphere_intersect(Sphere *s, float ox, float oy, float *n) {
 	return -INF;
 }
 
+// Ex 2.1 (1/2), const __restrict__ notifies the compiler that the memory behind the named pointer
+// will only be read via the name pointer (it is not aliased), and never written to,
+// enabling it to optimise accesses with the read-only cache
+// This does not guarantee that the compiler will decide to use the read-only cache
+// __ldg() can be used to force memory accesses via the read-only cache, however this is limited to specific types
+// See documentation: https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#ldg-function
 __device__ float sphere_intersect_read_only(Sphere const* __restrict__ s, float ox, float oy, float *n) {
 	float dx = ox - s->x;
 	float dy = oy - s->y;
@@ -53,6 +60,7 @@ __device__ float sphere_intersect_read_only(Sphere const* __restrict__ s, float 
 	return -INF;
 }
 
+// Ex 2.2 (1/3), Constant memory is declared similar to device symbols, and will be allocated at compile time
 __constant__ Sphere d_const_s[MAX_SPHERES];
 __constant__ unsigned int d_sphere_count;
 
@@ -85,6 +93,9 @@ __global__ void ray_trace(uchar4 *image, Sphere *d_s) {
 	image[offset].w = 255;
 }
 
+// Ex 2.2 (2/3), Const cache accesses are most efficient when all threads in a warp are accessing the same constant cache value
+// If threads in a warp, access different const cache locations simultaneously, then the accesses must be replayed
+// once per unique location, potentially 32 times! This can be slower than basic global memory.
 __global__ void ray_trace_const(uchar4 *image) {
 	// map from threadIdx/BlockIdx to pixel position
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -113,7 +124,7 @@ __global__ void ray_trace_const(uchar4 *image) {
 	image[offset].z = (int)(b * 255);
 	image[offset].w = 255;
 }
-
+// Ex 2.1 (2/2), Part 2, see notes for part 1.
 __global__ void ray_trace_read_only(uchar4 *image, Sphere const* __restrict__ d_s) {
 	// map from threadIdx/BlockIdx to pixel position
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -176,7 +187,7 @@ int main(void) {
 		h_s[i].z = rnd((float)IMAGE_DIM) - (IMAGE_DIM / 2.0f);
 		h_s[i].radius = rnd(100.0f) + 20;
 	}
-	//copy to constant memory
+	// Ex 2.2 (3/3), Copy data to constant memory
 	cudaMemcpyToSymbol(d_const_s, h_s, spheres_size);
 	//copy to device memory
 	cudaMemcpy(d_s, h_s, spheres_size, cudaMemcpyHostToDevice);
