@@ -1,3 +1,5 @@
+#pragma warning(disable : 4996)
+#pragma diag_suppress = deprecated_entity
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 #include <stdio.h>
