@@ -145,11 +145,13 @@ int main(int argc, char **argv)
 	checkCUDAError("CUDA kernel execution and timing");
 
 	cudaEventElapsedTime(&msec, start, stop);
-	cudaThreadSynchronize();
+	cudaDeviceSynchronize();
 	checkCUDAError("CUDA timing");
 
-	// Compute the ocupancy
-	occupancy = 0;
+	// Ex 1.2.1: Compute the occupancy
+	cudaDeviceProp deviceProp;
+	cudaGetDeviceProperties(&deviceProp, 0);
+	occupancy = (deviceProp.maxBlocksPerMultiProcessor * threads.x * threads.y * threads.z) / (float)(deviceProp.maxThreadsPerMultiProcessor * deviceProp.multiProcessorCount);
 
 	// Copy result from device to host
 	cudaMemcpyFromSymbol(h_C, d_C, mem_size_C);
