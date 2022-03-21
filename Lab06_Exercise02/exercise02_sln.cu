@@ -38,8 +38,12 @@ __constant__ int BLOCK_SIZE;
 
 __global__ void matrixMulCUDA()
 {
+	// This dynamic shared memory points to the contiguous block requested at kernel launch
 	extern __shared__ float sm[];
+	// Pointer arithmetic is used to access values within it
+	// As starts at the beginning of the block, so takes the pointer to the first element
 	float *As = &sm[0];
+	// As is (BLOCK_SIZE*BLOCK_SIZE) floats long, which means Bs takes the pointer after the final element of As
 	float *Bs = &sm[BLOCK_SIZE*BLOCK_SIZE];
 
 	// Block index
@@ -115,17 +119,23 @@ int main(int argc, char **argv)
 	cudaEventCreate(&stop);
 	checkCUDAError("CUDA event creation");
 
-	// Calculate the block size
+	// Ex 2.3.1, Calculate the block size using the built in fn cudaOccupancyMaxPotentialBlockSizeVariableSMem()
 	cudaOccupancyMaxPotentialBlockSizeVariableSMem(&min_grid_size, &TPB, matrixMulCUDA, requiredSM, 0);
+	// Ex 2.3.2, Here some maths is used to update the block size to a square number
 	TPB = (int)pow(4, floor(log(TPB) / log(4))); //round to nearest square power 2
+	// Ex 2.3.3, As we want a 2D block, the square root is used for each dimension
 	block_size = (int) sqrt(TPB);
+	// Ex 2.3.4, We copy the block size to the device, so it can be used in place of the macro from the previous exercise
+	// This value could also be replaced with blockDim.x and blockDim.y respectively (but you would need to know which one was appropriate at each statement!).
+	// However blockDim is a runtime value, so it could not be used to define the size of the static shared memory in the previous exercise.
 	cudaMemcpyToSymbol(BLOCK_SIZE, &block_size, sizeof(int));
 
 	// calculate grid size and execute kernel
 	dim3 threads(block_size, block_size);
 	dim3 grid(C_WIDTH / block_size, C_HEIGHT / block_size);
 	cudaEventRecord(start);
-	matrixMulCUDA << < grid, threads, requiredSM(block_size*block_size) >> >();
+	// Ex 2.2, Instead of passing a hardcoded shared memory length, the function declared in the previous step is used
+	matrixMulCUDA<<<grid, threads, requiredSM(block_size*block_size)>>>();
 	cudaEventRecord(stop);
 	cudaEventSynchronize(stop);
 	checkCUDAError("CUDA kernel execution and timing");
@@ -134,7 +144,7 @@ int main(int argc, char **argv)
 	cudaThreadSynchronize();
 	checkCUDAError("CUDA timing");
 
-	// Compute the ocupancy
+	// Compute the occupancy
 	cudaGetDeviceProperties(&props, 0);
 	cudaOccupancyMaxActiveBlocksPerMultiprocessor(&maxActiveBlocks, matrixMulCUDA, block_size*block_size, 0);
 	occupancy = (maxActiveBlocks * block_size*block_size) / (float)(props.maxThreadsPerMultiProcessor);
@@ -153,6 +163,7 @@ int main(int argc, char **argv)
 	else
 		printf("Test passed successfully\n");
 
+	// Ex 2.4
 	printf("Kernel time was %f with block size %d and theoretical occupancy of %f\n", msec, block_size, occupancy);
 
 }
@@ -198,6 +209,9 @@ void checkCUDAError(const char *msg)
 	}
 }
 
+// Ex 2.1, This function allows CUDA to dynamically calculate the amount of shared memory required
+// Based on the block size (threads per block)
+// Make sure you have declared it, before it's used, look for the function prototype at line 35
 int requiredSM(int tpb){
 	return (tpb*sizeof(float)* 2);
 }
